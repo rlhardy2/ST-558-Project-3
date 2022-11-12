@@ -1,17 +1,25 @@
 ---
-title: "Project3"
+title: "ST 558 Project 3"
 author: "Melanie Kahn & Rachel Hardy"
 date: "2022-11-12"
-output: html_document
+output: 
+  html_document:  
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: readable
+    df_print: tibble
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
+
+# Required Libraries
 
 Running the code chunk below loads the `tidyverse`, `readr`, `ggplot2`, `corrplot`, and `caret` packages.
 
-```{r, warning = FALSE, message = FALSE}
+```{r}
 library(tidyverse)
 library(readr)
 library(ggplot2)
@@ -28,23 +36,22 @@ The original online news popularity data set included 58 predictive variables, 2
 The variables present for each observation in this subset of the online news popularity data set are as follows:
 
 Non-Predictive Variables:
+
 * `url` - URL of the article  
 * `timedelta` - The number of days between the article publication and the dataset acquisition  
 
 Predictive Variables:
+
 * `data_channel_is_socmed` - Binary variable indicating if the data channel is 'Social Media'  
-* `is_weekend` - Binary variable indicating if the article published on the weekend  
-* `is_weekend` - Binary variable indicating if the article published on the weekend  
+* `is_weekend` - Binary variable indicating if the article published on the weekend
 * `num_imgs` - The number of images in the article  
 * `num_keywords` - The number of keywords in the metadata  
 * `n_tokens_title` - The number of words in the title  
 * `title_subjectivity` - Score of 0 - 1 indicating how subjective the title of the article is  
 
 Target Variable:
+
 * `shares` - Number of shares  
-
-
-
 * `var` - description  
     + `var` - description  
     + `var` - description  
@@ -59,33 +66,56 @@ Target Variable:
 Running the code chunk below reads in the online news popularity data set using `read_csv()`.
 
 ```{r}
-news <- read_csv(file = "./OnlineNewsPopularity.csv")
-news
+newsOriginal <- read_csv(file = "./OnlineNewsPopularity.csv")
+newsOriginal
 ```
 
 ## Modifying Data in Preparation for Model Fits
 
-Running the code chunk below subsets the data to only include the data channel we're interested in, `data_channel_is_socmed`. All other `data_channel_is_*` variables have been removed from the data set.
+Running the code chunk below subsets the data to only include observations for the data channel we're interested in, `data_channel_is_socmed`. All other `data_channel_is_*` observations have been removed from the data set.
 
 ```{r}
-news <- select(news, -data_channel_is_lifestyle, -data_channel_is_entertainment, -data_channel_is_bus, -data_channel_is_tech, -data_channel_is_world)
+news <- newsOriginal %>% filter(data_channel_is_socmed == 1)
 news
 ```
 
-## Splitting Data into Training and Testing Set
+Running the code below creates and adds the categorical variable `weekday` to the data set that tells us what day of the week the article was published.
 
-Running the code chunk below splits the modified `news` data set into a training and testing set using `createDataPartition()`. First the seed is set to make sure the random sampling will be reproducible. `createDataPartition()` then creates an indexing vector (`trainIndex`) with a subset of the `data_channel_is_socmed` variable where the training subset (`newsTrain`) will result in a vector (`list = FALSE`) that has approximately 70% (`p = 0.7`) of the observations from the updated `news` data set. This training vector is then used to create the training set (`newsTrain`) with approximately 70% of the observations from the updated `news` data set, and the test set (`newsTest`) with the remaining 30% of the observations.
+```{r}
+news <- news %>% mutate(weekday = if_else((weekday_is_monday == 1), "Monday",
+                                  if_else((weekday_is_tuesday == 1), "Tuesday", 
+                                  if_else((weekday_is_wednesday == 1), "Wednesday", 
+                                  if_else((weekday_is_thursday == 1), "Thursday", 
+                                  if_else((weekday_is_friday == 1), "Friday",
+                                  if_else((weekday_is_saturday == 1), "Saturday", 
+                                  if_else((weekday_is_sunday == 1), "Sunday", " ")))))))) %>%
+                 select(url, shares, weekday, everything())
+
+news$weekday <- factor(news$weekday, levels=c("Monday", "Tuesday", "Wednesday",
+                                              "Thursday", "Friday", "Saturday", "Sunday"))
+levels(news$weekday)
+
+news
+```
+
+## Splitting Data into Training Set and Testing Set
+
+Running the code chunk below splits the modified `news` data set into a training and testing set using `createDataPartition()`. First the seed is set to make sure the random sampling will be reproducible. `createDataPartition()` then creates an indexing vector (`trainIndex`) with a subset of the `shares` variable where the training subset (`newsTrain`) will result in a vector (`list = FALSE`) that has approximately 70% (`p = 0.7`) of the observations from the updated `news` data set. This training vector is then used to create the training set (`newsTrain`) with approximately 70% of the observations from the updated `news` data set, and the test set (`newsTest`) with the remaining 30% of the observations.
 
 ```{r}
 set.seed(100)
-newsIndex <- createDataPartition(news$data_channel_is_socmed, p = 0.7, list = FALSE)
+newsIndex <- createDataPartition(news$shares, p = 0.7, list = FALSE)
+
 newsTrain <- news[newsIndex, ]
 newsTest <- news[-newsIndex, ]
+
 newsTrain
 newsTest
 ```
 
 # Summarizations
+
+## Summary Statistics
 
 Running the code chunk below provides the mean and standard deviation for the number of times articles in the `news` data set were shared (`shares`).
 
@@ -94,11 +124,39 @@ mean(news$shares)
 sd(news$shares)
 ```
 
-Running the code chunk below creates a contingency table showing the number of articles in the online `news` popularity data set that were  published on the weekend (`is_weekend`). The results show that 34,454 were not published on the weekend, and 5,190 were.
+Running the code chunk below provides the mean and standard deviation for the number of images per article (`num_imgs`) in the `news` data set.
 
 ```{r}
-table(news$is_weekend)
+mean(news$num_imgs)
+sd(news$num_imgs)
 ```
+
+Running the code chunk below provides the mean and standard deviation for the number of keywords per article (`num_keywords`) in the `news` data set.
+
+```{r}
+mean(news$num_keywords)
+sd(news$num_keywords)
+```
+
+## Contingency Tables
+
+Running the code chunk below creates a contingency table showing the number of articles in the online `news` popularity data set that were published on the weekend (`is_weekend`).
+
+```{r}
+tableWeekend <- table(news$is_weekend)
+tableWeekend
+```
+
+From the table above, we can see that `r tableWeekend[2]` articles were published on the weekend, and `r tableWeekend[1]` articles were published during the week.
+
+Running the code chunk below creates a contingency table showing the number of articles in the online `news` popularity data set that were published on certain days of the week (`weekday`).
+
+```{r}
+tableWeekday <- table(news$weekday)
+tableWeekday
+```
+
+## Graphical Summaries
 
 Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of images (`num_imgs`) articles have.  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
 
@@ -152,11 +210,11 @@ Lastly, `trainControl()` was used within the `trControl` argument to do 10 fold 
 According to the `Accuracy`, the results show that a value of `n.trees` = , `interaction.depth` = , `shrinkage` = and `n.minobsinnode` = are optimal for the model.
 
 ```{r}
-boostTreeTrain <- train(data_channel_is_socmed ~ ., data = newsTrain,
-                        method = "gbm",
-                        preProcess = c("center", "scale"),
-                        trControl = trainControl(method = "cv", number = 10))
-boostTreeTrain
+#boostTreeTrain <- train(data_channel_is_socmed ~ ., data = newsTrain,
+                        #method = "gbm",
+                        #preProcess = c("center", "scale"),
+                        #trControl = trainControl(method = "cv", number = 10))
+#boostTreeTrain
 ```
 
 Now that the boosted tree model has been trained (`boostTreeTrain`), running the code chunk below will check how well the model does on the test set `newsTest` using the `confusionMatrix()` function. The `data` given to the confusion matrix was the `data_channel_is_socmed` variable from the `newsTest` data frame as it was this variable the boosted tree model was trained on. 
@@ -164,7 +222,7 @@ Now that the boosted tree model has been trained (`boostTreeTrain`), running the
 With an `Accuracy` of approximately , the model did a good/bad job of predicting observations correctly.
 
 ```{r}
-confusionMatrix(data = newsTest$data_channel_is_socmed, reference = predict(boostTreeTrain, newdata = newsTest))
+#confusionMatrix(data = newsTest$data_channel_is_socmed, reference = predict(boostTreeTrain, newdata = newsTest))
 ```
 
 
