@@ -1,0 +1,175 @@
+---
+title: "Project3"
+author: "Melanie Kahn & Rachel Hardy"
+date: "2022-11-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Running the code chunk below loads the `tidyverse`, `readr`, `ggplot2`, `corrplot`, and `caret` packages.
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(corrplot)
+library(caret)
+```
+
+# Introduction to Online News Popularity Data Set
+
+The online news popularity data used for this project summarizes a diverse set of features about articles published by [Mashable](http://www.mashable.com) over a two year period with the goal of predicting the number of shares in social networks - a proxy for popularity.
+
+The original online news popularity data set included 58 predictive variables, 2 non-predictive variables, 1 target variable. For the purposes of this project, we are only using a subset of this original data to contain _ predictive variables and _ non-predictive variables, keeping the same target variable.
+
+The variables present for each observation in this subset of the online news popularity data set are as follows:
+
+Non-Predictive Variables:
+* `url` - URL of the article  
+* `timedelta` - The number of days between the article publication and the dataset acquisition  
+
+Predictive Variables:
+* `data_channel_is_socmed` - Binary variable indicating if the data channel is 'Social Media'  
+* `is_weekend` - Binary variable indicating if the article published on the weekend  
+* `is_weekend` - Binary variable indicating if the article published on the weekend  
+* `num_imgs` - The number of images in the article  
+* `num_keywords` - The number of keywords in the metadata  
+* `n_tokens_title` - The number of words in the title  
+* `title_subjectivity` - Score of 0 - 1 indicating how subjective the title of the article is  
+
+Target Variable:
+* `shares` - Number of shares  
+
+
+
+* `var` - description  
+    + `var` - description  
+    + `var` - description  
+* `var` - description  
+    + `var` - description  
+    + `var` - description  
+
+# Data
+
+## Reading in Data
+
+Running the code chunk below reads in the online news popularity data set using `read_csv()`.
+
+```{r}
+news <- read_csv(file = "./OnlineNewsPopularity.csv")
+news
+```
+
+## Modifying Data in Preparation for Model Fits
+
+Running the code chunk below subsets the data to only include the data channel we're interested in, `data_channel_is_socmed`. All other `data_channel_is_*` variables have been removed from the data set.
+
+```{r}
+news <- select(news, -data_channel_is_lifestyle, -data_channel_is_entertainment, -data_channel_is_bus, -data_channel_is_tech, -data_channel_is_world)
+news
+```
+
+## Splitting Data into Training and Testing Set
+
+Running the code chunk below splits the modified `news` data set into a training and testing set using `createDataPartition()`. First the seed is set to make sure the random sampling will be reproducible. `createDataPartition()` then creates an indexing vector (`trainIndex`) with a subset of the `data_channel_is_socmed` variable where the training subset (`newsTrain`) will result in a vector (`list = FALSE`) that has approximately 70% (`p = 0.7`) of the observations from the updated `news` data set. This training vector is then used to create the training set (`newsTrain`) with approximately 70% of the observations from the updated `news` data set, and the test set (`newsTest`) with the remaining 30% of the observations.
+
+```{r}
+set.seed(100)
+newsIndex <- createDataPartition(news$data_channel_is_socmed, p = 0.7, list = FALSE)
+newsTrain <- news[newsIndex, ]
+newsTest <- news[-newsIndex, ]
+newsTrain
+newsTest
+```
+
+# Summarizations
+
+Running the code chunk below provides the mean and standard deviation for the number of times articles in the `news` data set were shared (`shares`).
+
+```{r}
+mean(news$shares)
+sd(news$shares)
+```
+
+Running the code chunk below creates a contingency table showing the number of articles in the online `news` popularity data set that were  published on the weekend (`is_weekend`). The results show that 34,454 were not published on the weekend, and 5,190 were.
+
+```{r}
+table(news$is_weekend)
+```
+
+Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of images (`num_imgs`) articles have.  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
+
+The resulting scatter plot shows a weak, positive linear correlation between popularity (`shares`) and number of images. 
+
+```{r}
+g <- ggplot(news, aes(x = shares, y = num_imgs))
+g + geom_point() +
+  geom_smooth(method = lm, col = "Blue") +
+  labs(title = "Relationship Between Popularity and Number of Images")
+```
+
+Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of keywords (`num_keywords`) articles have.  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
+
+The resulting scatter plot shows a weak, positive linear correlation between popularity (`shares`) and number of keywords. 
+
+```{r}
+g <- ggplot(news, aes(x = shares, y = num_keywords))
+g + geom_point() +
+  geom_smooth(method = lm, col = "Blue") +
+  labs(title = "Relationship Between Popularity and Number of Keywords")
+```
+
+Running the code chunk below creates a scatter plot to visualize the correlation between the number of words in the article's title (`n_tokens_title`) and title's subjectivity score (`title_subjectivity`).  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
+
+The resulting scatter plot shows almost no correlation between title subjectivity and length. 
+
+```{r}
+g <- ggplot(news, aes(x = title_subjectivity, y = n_tokens_title))
+g + geom_point() +
+  geom_smooth(method = lm, col = "Blue") +
+  labs(title = "Relationship Between Title Subjectivity and Length")
+```
+
+# Modeling
+
+## Linear Regression Models
+
+## Random Forest
+
+## Boosted Tree
+
+*Only framework for code*
+
+Running the code chunk below trains the boosted tree model. The formula notation used in the `train()` function models the `data_channel_is_socmed` variable using all the other variables in the data set. To use the boosted tree model, the `method` argument was specified as `"gbm"`. The data was preprocessed by centering and scaling. 
+
+`tuneGrid` was then used to consider values of ??? 
+
+Lastly, `trainControl()` was used within the `trControl` argument to do 10 fold cross-validation using the `"cv"` `method`.
+
+According to the `Accuracy`, the results show that a value of `n.trees` = , `interaction.depth` = , `shrinkage` = and `n.minobsinnode` = are optimal for the model.
+
+```{r}
+boostTreeTrain <- train(data_channel_is_socmed ~ ., data = newsTrain,
+                        method = "gbm",
+                        preProcess = c("center", "scale"),
+                        trControl = trainControl(method = "cv", number = 10))
+boostTreeTrain
+```
+
+Now that the boosted tree model has been trained (`boostTreeTrain`), running the code chunk below will check how well the model does on the test set `newsTest` using the `confusionMatrix()` function. The `data` given to the confusion matrix was the `data_channel_is_socmed` variable from the `newsTest` data frame as it was this variable the boosted tree model was trained on. 
+
+With an `Accuracy` of approximately , the model did a good/bad job of predicting observations correctly.
+
+```{r}
+confusionMatrix(data = newsTest$data_channel_is_socmed, reference = predict(boostTreeTrain, newdata = newsTest))
+```
+
+
+# Comparison
+
+# Automation
+
+
