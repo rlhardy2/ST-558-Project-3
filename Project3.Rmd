@@ -20,13 +20,13 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = TRU
 
 # Required Libraries
 
-Running the code chunk below loads the `tidyverse`, `readr`, `ggplot2`, `corrplot`, and `caret` packages.
+Running the code chunk below loads the `tidyverse`, `readr`, `ggplot2`, `shiny`, and `caret` packages.
 
 ```{r}
 library(tidyverse)
 library(readr)
 library(ggplot2)
-library(corrplot)
+library(shiny)
 library(caret)
 ```
 
@@ -80,7 +80,7 @@ newsOriginal
 Running the code chunk below subsets the data to only include observations for the data channel we're interested in, `data_channel_is_socmed`. All other `data_channel_is_*` observations have been removed from the data set.
 
 ```{r}
-news <- newsOriginal %>% filter(data_channel_is_socmed == 1)
+news <- newsOriginal %>% filter(params$dataChannel == 1)
 news
 ```
 
