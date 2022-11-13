@@ -10,7 +10,7 @@ output:
     theme: readable
     df_print: tibble
 params:
-    dataChannel: “data_channel_is_socmed"
+    dataChannel: 'data_channel_is_socmed'
 
 ---
 
@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = TRU
 
 # Required Libraries
 
-Running the code chunk below loads the `tidyverse`, `readr`, `ggplot2`, `shiny`, and `caret` packages.
+Running the code chunk below loads the `tidyverse`, `readr`, `ggplot2`, `shiny`, `caret`, and `rmarkdown` packages.
 
 ```{r}
 library(tidyverse)
@@ -28,6 +28,7 @@ library(readr)
 library(ggplot2)
 library(shiny)
 library(caret)
+library(rmarkdown)
 ```
 
 # Introduction to the Data
@@ -402,4 +403,8 @@ The best model is `r bestModel` with a corresponding RMSE value of `r bestRMSE`.
 
 # Automation
 
+```{r}
+rmarkdown::render("Project3.Rmd", output_file = "Social_Media.html",
+                  params = list(team = dataChannel: 'data_channel_is_socmed'))
+```
 
