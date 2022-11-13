@@ -161,7 +161,7 @@ tableWeekday
 
 ### Bar Plot
 
-(Add description here.)
+(Rachel - add description here.)
 
 ```{r}
 g <- ggplot(news, aes(x = weekday))
@@ -173,7 +173,7 @@ g + geom_bar(aes(fill = weekday)) +
 
 ### Box Plot 
 
-(Add description here.) **I'm not sure if we should keep this one?**
+(Rachel - add description here.) **I'm not sure if we should keep this one?**
 
 ```{r}
 g <- ggplot(news, aes(x = weekday, y = shares))
@@ -185,7 +185,7 @@ g + geom_boxplot(aes(fill = weekday)) +
 
 ### Histograms
 
-(Add description here.)
+(Rachel - add description here.)
 
 ```{r}
 g <- ggplot(news, aes(x = shares))
@@ -231,7 +231,48 @@ g + geom_point() +
 
 ## Linear Regression
 
+(Rachel - add thorough description of what linear regression is here.)
+
+First linear regression model (continue with explanation of what the first model represents)...
+
+```{r}
+set.seed(100)
+firstLinearModel <- train(shares ~ weekday + title_subjectivity + num_imgs + I(title_subjectivity^2) + I(num_imgs^2), 
+                        data = newsTrain,
+                        method = "lm",
+                        preProcess = c("center", "scale"),
+                        trControl = trainControl(method = "cv"))
+firstLinearModel
+
+summary(firstLinearModel)
+```
+
+(Melanie - second linear regression model here.)
+
 ## Random Forest
+
+(Rachel - add description of random forests here.)
+
+Running the code chunk below trains the random forest model (continue with explanation)...
+
+```{r}
+set.seed(100)
+randomForestCtrl <- trainControl(method = "repeatedcv", number = 5, repeats = 3)
+randomForestFit <- train(shares ~ weekday + num_imgs + num_keywords, 
+                         data = newsTrain, method = "rf", 
+                         trControl = randomForestCtrl,
+                         preProcess = c("center","scale"), 
+                         tuneGrid = data.frame(mtry = 1:5))
+
+randomForestFit
+```
+
+
+```{r}
+randomForestPredict <- predict(randomForestFit, newdata = newsTest)
+
+#confusionMatrix(randomForestPredict, newsTest$shares)
+```
 
 ## Boosted Tree
 
@@ -260,7 +301,6 @@ With an `Accuracy` of approximately , the model did a good/bad job of predicting
 ```{r}
 #confusionMatrix(data = newsTest$data_channel_is_socmed, reference = predict(boostTreeTrain, newdata = newsTest))
 ```
-
 
 # Comparison
 
