@@ -209,16 +209,20 @@ g + geom_point() +
   labs(title = "Relationship Between Popularity and Number of Images")
 ```
 
-Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of keywords (`num_keywords`) articles have.  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
+Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of keywords (`num_keywords`) articles have. `geom_jitter` is used instead of `geom_point()` to plot the data points in a manner where the `weekday` component can be better visualized. The `geom_smooth()` function plots the regression line using method `lm` for linear model.
+
+The results show a weak, positive linear correlation between the number of shares and keywords, meaning that as the number of keywords increases, so does the popularity of the article. As of of the default arguments for the `geom_smooth` function is `se = TRUE`, we can also see that the confidence interval widens as shares increase, indicating that uncertainty of the effect is greater.
 
 ```{r}
 g <- ggplot(news, aes(x = shares, y = num_keywords))
-g + geom_point() +
+g + geom_jitter(aes(color = weekday)) +
   geom_smooth(method = lm, col = "Blue") +
-  labs(title = "Relationship Between Popularity and Number of Keywords")
+  labs(title = "Relationship Between Popularity and Number of Keywords",
+       x = "Shares",
+       y = "Number of Keywords")
 ```
 
-Running the code chunk below creates a scatter plot to visualize the correlation between the number of words in the article's title (`n_tokens_title`) and title's subjectivity score (`title_subjectivity`) according to the day the article was published (`weekday`).  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
+Running the code chunk below creates a facet grid scatter plot to visualize the correlation between the number of words in the article's title (`n_tokens_title`) and title's subjectivity score (`title_subjectivity`) according to the day the article was published (`weekday`).  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
 
 The results show a weak, positive linear correlation between title subjectivity and length on Mondays, Fridays and Sundays. Tuesday and Wednesday were also showed slightly positive, but generally speaking there is little to no correlation. Thursday and Saturday showed weak, negative correlations. All of these weak correlations tell us that the number of words in an article's title has little to no impact on the article's overall subjectivity rating.
 
