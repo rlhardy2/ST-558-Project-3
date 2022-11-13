@@ -251,16 +251,28 @@ firstLinearModel
 summary(firstLinearModel)
 ```
 
-*(Melanie - second linear regression model here.)*
+Running the code chunk below creates a simple linear regression model where `shares` is the response variable and the predictor variables are `weekday`, `num_imgs`, `num_keywords`, `n_tokens_title`, and `title_subjectivity`. The `summary()` function is used to examine the values for the residuals and coefficients, as well as the performance criteria values such as multiple R-squared.
+
+```{r}
+set.seed(100)
+secondLinearModel <- train(shares ~ weekday + num_imgs + num_keywords + n_tokens_title + title_subjectivity, 
+                        data = newsTrain,
+                        method = "lm",
+                        preProcess = c("center", "scale"),
+                        trControl = trainControl(method = "cv"))
+secondLinearModel
+
+summary(secondLinearModel)
+```
 
 ## Random Forest
 
 To understand random forests, it is first important to understand bagged trees which are created using bootstrap aggregation. For bagged trees, the sample is treated as the population and re-sampling is done with replacement. The process of creating a bagged tree is below:
 
-* Step 1: Create a bootstrap sample using `sample()`
-* Step 2: Train the tree on this sample (no pruning necessary)
-* Step 3: Repeat B = 1000 times (no set mark)
-* Step 4: Final prediction is average of these predictions (for regression trees) **OR** use majority vote as final classification prediction (classification trees)
+* Step 1: Create a bootstrap sample using `sample()`  
+* Step 2: Train the tree on this sample (no pruning necessary)  
+* Step 3: Repeat B = 1000 times (no set mark)  
+* Step 4: Final prediction is average of these predictions (for regression trees) **OR** use majority vote as final classification prediction (classification trees)  
 
 Random forests are essentially bagged trees, except not all the predictors are used for each model. A random subset of predictors is used for each tree model (bootstrap sample). The purpose of doing this is to prevent one or two strong predictors from dominating all tree models and creating unwanted correlation between models.
 
@@ -287,30 +299,35 @@ randomForestPredict <- predict(randomForestFit, newdata = newsTest)
 
 ## Boosted Tree
 
-*Only framework for code*
+Boosted trees are another enhancement to the single tree methods. However, unlike bagged and random forest models, boosted trees do not use bootstrapping. Boosting is a general method to slowly train your tree so you don't overfit your model. The trees are grown in a sequential manner where each subsequent tree is based off a modified version of the original data, updating the predictions as the tree is grown. The process is described below:
 
-Running the code chunk below trains the boosted tree model. The formula notation used in the `train()` function models the `data_channel_is_socmed` variable using all the other variables in the data set. To use the boosted tree model, the `method` argument was specified as `"gbm"`. The data was pre-processed by centering and scaling. 
 
-`tuneGrid` was then used to consider values of ??? 
+* Step 1: Initialize predictions as 0  
+* Step 2: Find the residuals for every observation  
+    + Residuals in first tree fit will be original data values (observed - 0 = observed)  
+* Step 3: Fit a regression tree with `d` splits where the residuals are the response  
+* Step 4: Update predictions using the new predictions from step 3 multiplied by the growth rate (Lambda tuning parameter)  
+* Step 5: Continue to update residuals for new predictions (steps 2 -4) `B` times  
 
-Lastly, `trainControl()` was used within the `trControl` argument to do 10 fold cross-validation using the `"cv"` `method`.
-
-According to the `Accuracy`, the results show that a value of `n.trees` = , `interaction.depth` = , `shrinkage` = and `n.minobsinnode` = are optimal for the model.
+Running the code chunk below trains the boosted tree model. The formula notation used in the `train()` function models the `shares` variable using the following predictor/explanatory variables: `weekday`, `num_imgs`, `num_keywords`, `n_tokens_title`, and `title_subjectivity`. To use the boosted tree model, the `method` argument was specified as `"gbm"`. The data was pre-processed by centering and scaling. `tuneGrid` was then used to consider values of `n.trees` = 50, `interaction.depth` = 1, `shrinkage` = 0.1, and `n.minobsinnode` = 10. Lastly, `trainControl()` was used within the `trControl` argument to do 10 fold cross-validation using the `"cv"` `method`.
 
 ```{r}
-#boostTreeTrain <- train(data_channel_is_socmed ~ ., data = newsTrain,
-                        #method = "gbm",
-                        #preProcess = c("center", "scale"),
-                        #trControl = trainControl(method = "cv", number = 10))
-#boostTreeTrain
+boostTreeFit <- train(shares ~ weekday + num_imgs + num_keywords + n_tokens_title + title_subjectivity, data = newsTrain,
+                        method = "gbm",
+                        preProcess = c("center", "scale"),
+                        tuneGrid = data.frame(n.trees = 50, interaction.depth = 1, shrinkage = 0.1, n.minobsinnode = 10),
+                        trControl = trainControl(method = "cv", number = 10))
+boostTreeFit
 ```
 
-Now that the boosted tree model has been trained (`boostTreeTrain`), running the code chunk below will check how well the model does on the test set `newsTest` using the `confusionMatrix()` function. The `data` given to the confusion matrix was the `data_channel_is_socmed` variable from the `newsTest` data frame as it was this variable the boosted tree model was trained on. 
+Now that the boosted tree model has been trained (`boostTreeFit`), running the code chunk below will check how well the model does on the test set `newsTest` using the `confusionMatrix()` function. The `data` given to the confusion matrix was the `shares` variable from the `newsTest` data frame as it was this variable the boosted tree model was trained on. 
 
 With an `Accuracy` of approximately , the model did a good/bad job of predicting observations correctly.
 
 ```{r}
-#confusionMatrix(data = newsTest$data_channel_is_socmed, reference = predict(boostTreeTrain, newdata = newsTest))
+boostingPredict <- predict(boostTreeFit, newdata = newsTest)
+
+#confusionMatrix(boostingPredict, newsTest$shares)
 ```
 
 # Comparison
