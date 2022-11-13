@@ -9,6 +9,9 @@ output:
     toc_float: true
     theme: readable
     df_print: tibble
+params:
+    dataChannel: “data_channel_is_socmed"
+
 ---
 
 ```{r setup, include=FALSE}
