@@ -263,6 +263,9 @@ firstLinearModel <- train(shares ~ weekday + title_subjectivity + num_imgs + I(t
 firstLinearModel
 
 summary(firstLinearModel)
+
+firstLinearRMSE <- firstLinearModel$results$RMSE
+firstLinearRMSE
 ```
 
 Running the code chunk below creates a simple linear regression model where `shares` is the response variable and the predictor variables are `weekday`, `num_imgs`, `num_keywords`, `n_tokens_title`, `title_subjectivity`, and `global_subjectivity`. The `summary()` function is used to examine the values for the residuals and coefficients, as well as the performance criteria values such as multiple R-squared.
@@ -277,6 +280,9 @@ secondLinearModel <- train(shares ~ weekday + num_imgs + num_keywords + n_tokens
 secondLinearModel
 
 summary(secondLinearModel)
+
+secondLinearRMSE <- secondLinearModel$results$RMSE
+secondLinearRMSE
 ```
 
 ## Random Forest
