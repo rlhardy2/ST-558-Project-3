@@ -161,7 +161,7 @@ tableWeekday
 
 ### Bar Plot
 
-(Rachel - add description here.)
+Running the code chunk below creates a bar plot to visualize the number of articles published per each `weekday`. Using the aesthetics option 'fill = weekday' gives us a nicely colored graph.
 
 ```{r}
 g <- ggplot(news, aes(x = weekday))
@@ -173,7 +173,7 @@ g + geom_bar(aes(fill = weekday)) +
 
 ### Box Plot 
 
-(Rachel - add description here.) **I'm not sure if we should keep this one?**
+Running the code below creates a box plot of number of `shares` for each `weekday`. Using the aesthetics option 'fill = weekday' gives us a nicely colored graph. **I'm not sure if we should keep this one?**
 
 ```{r}
 g <- ggplot(news, aes(x = weekday, y = shares))
@@ -185,7 +185,7 @@ g + geom_boxplot(aes(fill = weekday)) +
 
 ### Histograms
 
-(Rachel - add description here.)
+Running the code below creates two histograms of the number of `shares` that show us the distribution of the variable. The second histogram has an added density layer to give us a better idea of how the data is spread out.
 
 ```{r}
 g <- ggplot(news, aes(x = shares))
