@@ -334,17 +334,16 @@ boostTreeFit <- train(shares ~ weekday + num_imgs + num_keywords + n_tokens_titl
 boostTreeFit
 ```
 
-Now that the boosted tree model has been trained (`boostTreeFit`), running the code chunk below will check how well the model does on the test set `newsTest` using the `confusionMatrix()` function. The `data` given to the confusion matrix was the `shares` variable from the `newsTest` data frame as it was this variable the boosted tree model was trained on. 
-
-With an `Accuracy` of approximately , the model did a good/bad job of predicting observations correctly.
+Now that the boosted tree model has been trained (`boostTreeFit`), running the code chunk below will check how well the model does on the test set `newsTest` using the `postResample()` function. 
 
 ```{r}
 boostingPredict <- predict(boostTreeFit, newdata = newsTest)
-
-#confusionMatrix(boostingPredict, newsTest$shares)
+postResample(boostingPredict, newsTest$shares)
 ```
 
 # Comparison
+
+
 
 # Automation
 
