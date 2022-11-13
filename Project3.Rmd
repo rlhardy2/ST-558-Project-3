@@ -12,7 +12,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = TRUE)
 ```
 
 # Required Libraries
@@ -80,7 +80,7 @@ news <- newsOriginal %>% filter(data_channel_is_socmed == 1)
 news
 ```
 
-Running the code below creates and adds the categorical variable `weekday` to the data set that tells us what day of the week the article was published.
+Running the code chunk below creates the categorical variable `weekday` to the data set that tells us what day of the week the article was published.
 
 ```{r}
 news <- news %>% mutate(weekday = if_else((weekday_is_monday == 1), "Monday",
@@ -161,7 +161,7 @@ tableWeekday
 
 ### Bar Plot
 
-Running the code chunk below creates a bar plot to visualize the number of articles published per each `weekday`. Using the aesthetics option 'fill = weekday' gives us a nicely colored graph.
+Running the code chunk below creates a bar plot to visualize the number of articles published per each `weekday`. Using the aesthetics option `aes(fill = weekday)` inside the `geom_bar()` function gives us a nicely colored graph.
 
 ```{r}
 g <- ggplot(news, aes(x = weekday))
@@ -173,7 +173,7 @@ g + geom_bar(aes(fill = weekday)) +
 
 ### Box Plot 
 
-Running the code below creates a box plot of number of `shares` for each `weekday`. Using the aesthetics option 'fill = weekday' gives us a nicely colored graph. **I'm not sure if we should keep this one?**
+Running the code chunk below creates a box plot of number of `shares` for each `weekday`. Using the aesthetics option 'fill = weekday' gives us a nicely colored graph.
 
 ```{r}
 g <- ggplot(news, aes(x = weekday, y = shares))
@@ -185,7 +185,7 @@ g + geom_boxplot(aes(fill = weekday)) +
 
 ### Histograms
 
-Running the code below creates two histograms of the number of `shares` that show us the distribution of the variable. The second histogram has an added density layer to give us a better idea of how the data is spread out.
+Running the code chunk below creates two histograms of the number of `shares` that show us the distribution of the variable. The second histogram has an added density layer to give us a better idea of how the data is spread out.
 
 ```{r}
 g <- ggplot(news, aes(x = shares))
@@ -231,9 +231,13 @@ g + geom_point() +
 
 ## Linear Regression
 
-(Rachel - add thorough description of what linear regression is here.)
+Linear regression attempts to model the (linear) relationship between a response variable and one or more predictor variables by fitting a linear equation to the data. The simplest form of the linear equation is `Y = a + bX`, where `Y` is the response variable, `a` is the intercept, `b` is the slope, and `X` is the predictor (or explanatory) variable. The most common method for fitting a regression model is least-squares regression, where the best-fitting line is calculated by minimizing the sum of the squared residuals.
 
-First linear regression model (continue with explanation of what the first model represents)...
+For linear regression, it is usually important to understand which variables are related and which variables scientifically should be in the model. It is also important to split the data into a training set and a testing set so the model does not become over-fit.
+
+Running the code chunk below creates a multiple linear regression model where `shares` is the response variable and the predictor variables are `weekday`, `title_subjectivity`, `num_imgs`, `title_subjectivity^2`, and `num_imgs^2`.
+
+By using the `summary()` function, we can see the values for the residuals and coefficients, as well as the performance criteria values such as multiple R-squared.
 
 ```{r}
 set.seed(100)
@@ -247,13 +251,20 @@ firstLinearModel
 summary(firstLinearModel)
 ```
 
-(Melanie - second linear regression model here.)
+*(Melanie - second linear regression model here.)*
 
 ## Random Forest
 
-(Rachel - add description of random forests here.)
+To understand random forests, it is first important to understand bagged trees which are created using bootstrap aggregation. For bagged trees, the sample is treated as the population and re-sampling is done with replacement. The process of creating a bagged tree is below:
 
-Running the code chunk below trains the random forest model (continue with explanation)...
+* Step 1: Create a bootstrap sample using `sample()`
+* Step 2: Train the tree on this sample (no pruning necessary)
+* Step 3: Repeat B = 1000 times (no set mark)
+* Step 4: Final prediction is average of these predictions (for regression trees) **OR** use majority vote as final classification prediction (classification trees)
+
+Random forests are essentially bagged trees, except not all the predictors are used for each model. A random subset of predictors is used for each tree model (bootstrap sample). The purpose of doing this is to prevent one or two strong predictors from dominating all tree models and creating unwanted correlation between models.
+
+Running the code chunk below trains the random forest model. The formula notation used in the `train()` function models the `shares` variable using the following predictor/explanatory variables: `weekday`, `num_imgs`, and `num_keywords`. To use the random forest model, the `method` argument was specified as `"rf"`. The data was pre-processed by centering and scaling. Cross validation was used five-fold and repeated three (3) times. The argument `tuneGrid` was then used to replicate the random forest model a total of five (5) times. The best model is then chosen based on the performance criteria.
 
 ```{r}
 set.seed(100)
@@ -278,7 +289,7 @@ randomForestPredict <- predict(randomForestFit, newdata = newsTest)
 
 *Only framework for code*
 
-Running the code chunk below trains the boosted tree model. The formula notation used in the `train()` function models the `data_channel_is_socmed` variable using all the other variables in the data set. To use the boosted tree model, the `method` argument was specified as `"gbm"`. The data was preprocessed by centering and scaling. 
+Running the code chunk below trains the boosted tree model. The formula notation used in the `train()` function models the `data_channel_is_socmed` variable using all the other variables in the data set. To use the boosted tree model, the `method` argument was specified as `"gbm"`. The data was pre-processed by centering and scaling. 
 
 `tuneGrid` was then used to consider values of ??? 
 

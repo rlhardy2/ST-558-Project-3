@@ -1540,8 +1540,8 @@ library(ggplot2)
 library(corrplot)
 library(caret)</code></pre>
 </div>
-<div id="introduction-to-online-news-popularity-data-set" class="section level1">
-<h1>Introduction to Online News Popularity Data Set</h1>
+<div id="introduction-to-the-data" class="section level1">
+<h1>Introduction to the Data</h1>
 <p>The online news popularity data used for this project summarizes a
 diverse set of features about articles published by <a href="http://www.mashable.com">Mashable</a> over a two year period with
 the goal of predicting the number of shares in social networks - a proxy
@@ -1593,8 +1593,8 @@ subjective the title of the article is</li>
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
-<div id="reading-in-data" class="section level2">
-<h2>Reading in Data</h2>
+<div id="reading-in-the-data" class="section level2">
+<h2>Reading in the Data</h2>
 <p>Running the code chunk below reads in the online news popularity data
 set using <code>read_csv()</code>.</p>
 <pre class="r"><code>newsOriginal &lt;- read_csv(file = &quot;./OnlineNewsPopularity.csv&quot;)
@@ -1620,8 +1620,8 @@ newsOriginal</code></pre>
 ## #   kw_max_min &lt;dbl&gt;, kw_avg_min &lt;dbl&gt;, kw_min_max &lt;dbl&gt;, kw_max_max &lt;dbl&gt;,
 ## #   kw_avg_max &lt;dbl&gt;, kw_min_avg &lt;dbl&gt;, kw_max_avg &lt;dbl&gt;, kw_avg_avg &lt;dbl&gt;, …</code></pre>
 </div>
-<div id="modifying-data-in-preparation-for-model-fits" class="section level2">
-<h2>Modifying Data in Preparation for Model Fits</h2>
+<div id="modifying-the-data" class="section level2">
+<h2>Modifying the Data</h2>
 <p>Running the code chunk below subsets the data to only include
 observations for the data channel we’re interested in,
 <code>data_channel_is_socmed</code>. All other
@@ -1688,8 +1688,8 @@ levels(news$weekday)</code></pre>
 ## #   data_channel_is_world &lt;dbl&gt;, kw_min_min &lt;dbl&gt;, kw_max_min &lt;dbl&gt;,
 ## #   kw_avg_min &lt;dbl&gt;, kw_min_max &lt;dbl&gt;, kw_max_max &lt;dbl&gt;, kw_avg_max &lt;dbl&gt;, …</code></pre>
 </div>
-<div id="splitting-data-into-training-set-and-testing-set" class="section level2">
-<h2>Splitting Data into Training Set and Testing Set</h2>
+<div id="splitting-the-data" class="section level2">
+<h2>Splitting the Data</h2>
 <p>Running the code chunk below splits the modified <code>news</code>
 data set into a training and testing set using
 <code>createDataPartition()</code>. First the seed is set to make sure
@@ -1807,7 +1807,9 @@ tableWeekday</code></pre>
 <h2>Graphical Summaries</h2>
 <div id="bar-plot" class="section level3">
 <h3>Bar Plot</h3>
-<p>(Add description here.)</p>
+<p>Running the code chunk below creates a bar plot to visualize the
+number of articles published per each <code>weekday</code>. Using the
+aesthetics option ‘fill = weekday’ gives us a nicely colored graph.</p>
 <pre class="r"><code>g &lt;- ggplot(news, aes(x = weekday))
 
 g + geom_bar(aes(fill = weekday)) + 
@@ -1817,8 +1819,9 @@ g + geom_bar(aes(fill = weekday)) +
 </div>
 <div id="box-plot" class="section level3">
 <h3>Box Plot</h3>
-<p>(Add description here.) <strong>I’m not sure if we should keep this
-one?</strong></p>
+<p>Running the code below creates a box plot of number of
+<code>shares</code> for each <code>weekday</code>. Using the aesthetics
+option ‘fill = weekday’ gives us a nicely colored graph.</p>
 <pre class="r"><code>g &lt;- ggplot(news, aes(x = weekday, y = shares))
 
 g + geom_boxplot(aes(fill = weekday)) + 
@@ -1828,7 +1831,10 @@ g + geom_boxplot(aes(fill = weekday)) +
 </div>
 <div id="histograms" class="section level3">
 <h3>Histograms</h3>
-<p>(Add description here.)</p>
+<p>Running the code below creates two histograms of the number of
+<code>shares</code> that show us the distribution of the variable. The
+second histogram has an added density layer to give us a better idea of
+how the data is spread out.</p>
 <pre class="r"><code>g &lt;- ggplot(news, aes(x = shares))
 
 g + geom_histogram(color = &quot;black&quot;, fill = &quot;#FF6666&quot;) + labs(title = &quot;Histogram of Shares&quot;) +
@@ -1880,11 +1886,90 @@ g + geom_point() +
 </div>
 <div id="modeling" class="section level1">
 <h1>Modeling</h1>
-<div id="linear-regression-models" class="section level2">
-<h2>Linear Regression Models</h2>
+<div id="linear-regression" class="section level2">
+<h2>Linear Regression</h2>
+<p>Linear regression attempts to model the (linear) relationship between
+a response variable and one or more predictor variables by fitting a
+linear equation to the data. The simplest form of the linear equation is
+<code>Y = a + bX</code>, where <code>Y</code> is the response variable,
+<code>a</code> is the intercept, <code>b</code> is the slope, and
+<code>X</code> is the predictor (or explanatory) variable. The most
+common method for fitting a regression model is least-squares
+regression, where the best-fitting line is calculated by minimizing the
+sum of the squares of the residuals.</p>
+<p>Running the code below creates a multiple linear regression model
+where <code>shares</code> is the response variable and the predictor
+variables are <code>weekday</code>, <code>title_subjectivity</code>,
+<code>num_imgs</code>, <code>title_subjectivity^2</code>, and
+<code>num_imgs^2</code>.</p>
+<pre class="r"><code>set.seed(100)
+firstLinearModel &lt;- train(shares ~ weekday + title_subjectivity + num_imgs + I(title_subjectivity^2) + I(num_imgs^2), 
+                        data = newsTrain,
+                        method = &quot;lm&quot;,
+                        preProcess = c(&quot;center&quot;, &quot;scale&quot;),
+                        trControl = trainControl(method = &quot;cv&quot;))
+firstLinearModel</code></pre>
+<pre><code>## Linear Regression 
+## 
+## 1628 samples
+##    3 predictor
+## 
+## Pre-processing: centered (10), scaled (10) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 1464, 1465, 1465, 1465, 1465, 1466, ... 
+## Resampling results:
+## 
+##   RMSE      Rsquared    MAE    
+##   5636.387  0.01319643  2783.55
+## 
+## Tuning parameter &#39;intercept&#39; was held constant at a value of TRUE</code></pre>
+<pre class="r"><code>summary(firstLinearModel)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = .outcome ~ ., data = dat)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##  -5063  -2282  -1449    222 119016 
+## 
+## Coefficients:
+##                           Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                3698.64     147.96  24.997   &lt;2e-16 ***
+## weekdayTuesday             -145.10     204.28  -0.710   0.4776    
+## weekdayWednesday            -84.18     201.66  -0.417   0.6764    
+## weekdayThursday            -341.09     203.45  -1.677   0.0938 .  
+## weekdayFriday               118.20     193.62   0.610   0.5416    
+## weekdaySaturday            -129.76     178.02  -0.729   0.4662    
+## weekdaySunday               259.94     170.31   1.526   0.1271    
+## title_subjectivity           71.58     453.45   0.158   0.8746    
+## num_imgs                    -23.39     389.34  -0.060   0.9521    
+## `I(title_subjectivity^2)`   326.10     453.23   0.720   0.4719    
+## `I(num_imgs^2)`            -330.91     389.26  -0.850   0.3954    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5970 on 1617 degrees of freedom
+## Multiple R-squared:  0.01453,    Adjusted R-squared:  0.008435 
+## F-statistic: 2.384 on 10 and 1617 DF,  p-value: 0.008366</code></pre>
+<p>(Melanie - second linear regression model here.)</p>
 </div>
 <div id="random-forest" class="section level2">
 <h2>Random Forest</h2>
+<p>(Rachel - add description of random forests here.)</p>
+<p>Running the code chunk below trains the random forest model (continue
+with explanation)…</p>
+<pre class="r"><code>#set.seed(100)
+#randomForestCtrl &lt;- trainControl(method = &quot;repeatedcv&quot;, number = 5, repeats = 3)
+#randomForestFit &lt;- train(shares ~ weekday + num_imgs + num_keywords, 
+                         #data = newsTrain, method = &quot;rf&quot;, 
+                         #trControl = randomForestCtrl,
+                         #preProcess = c(&quot;center&quot;,&quot;scale&quot;), 
+                         #tuneGrid = data.frame(mtry = 1:5))
+
+#randomForestFit</code></pre>
+<pre class="r"><code>#randomForestPredict &lt;- predict(randomForestFit, newdata = newsTest)
+
+#confusionMatrix(randomForestPredict, newsTest$shares)</code></pre>
 </div>
 <div id="boosted-tree" class="section level2">
 <h2>Boosted Tree</h2>
