@@ -38,23 +38,24 @@ The variables present for each observation in this subset of the online news pop
 Non-Predictive Variables:
 
 * `url` - URL of the article  
-* `timedelta` - The number of days between the article publication and the dataset acquisition  
+* `timedelta` - The number of days between the article publication and the data set acquisition  
 
 Predictive Variables:
 
-* `data_channel_is_*` - Binary variable indicating the type of data channel
-    + `lifestyle` - Lifestyle
-    + `entertainment` - Entertainment
-    + `bus` - Business
-    + `socmed` - Social Media
-    + `tech` - Tech
-    + `World` - World
-* `is_weekend` - Binary variable indicating if the article published on the weekend
-* `weekday` - What day of the week the article was published (factor variable with seven levels)
+* `data_channel_is_*` - Binary variable indicating the type of data channel  
+    + `lifestyle` - Lifestyle  
+    + `entertainment` - Entertainment  
+    + `bus` - Business  
+    + `socmed` - Social Media  
+    + `tech` - Tech  
+    + `World` - World  
+* `is_weekend` - Binary variable indicating if the article published on the weekend  
+* `weekday` - What day of the week the article was published (factor variable with seven levels)  
 * `num_imgs` - The number of images in the article  
 * `num_keywords` - The number of keywords in the metadata  
 * `n_tokens_title` - The number of words in the title  
 * `title_subjectivity` - Score of 0 - 1 indicating how subjective the title of the article is  
+* `global_subjectivity` - Score of 0 - 1 indicating how subjective the text of the article is  
 
 Target Variable:
 
@@ -200,13 +201,17 @@ g + geom_histogram(aes(y=..density..), colour="black", fill="white") +
 
 ### Scatter Plots
 
-Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of images (`num_imgs`) articles have.  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
+Running the code chunk below creates a scatter plot to visualize the correlation between the text subjectivity (`global_subjectivity`) and the number of images (`num_imgs`) articles have. The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model.
+
+The results show a weak, positive linear correlation between an article's overall subjectivity and the number of images used. It is an interesting finding that subjectivity would increase with the number of images, even if only slightly.
 
 ```{r}
-g <- ggplot(news, aes(x = shares, y = num_imgs))
+g <- ggplot(news, aes(x = global_subjectivity, y = num_imgs))
 g + geom_point() +
   geom_smooth(method = lm, col = "Blue") +
-  labs(title = "Relationship Between Popularity and Number of Images")
+  labs(title = "Relationship Between Text Subjectivity and Number of Images",
+       x = "Text Subjectivity",
+       y = "Number of Images")
 ```
 
 Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of keywords (`num_keywords`) articles have. `geom_jitter` is used instead of `geom_point()` to plot the data points in a manner where the `weekday` component can be better visualized. The `geom_smooth()` function plots the regression line using method `lm` for linear model.
@@ -224,7 +229,7 @@ g + geom_jitter(aes(color = weekday)) +
 
 Running the code chunk below creates a facet grid scatter plot to visualize the correlation between the number of words in the article's title (`n_tokens_title`) and title's subjectivity score (`title_subjectivity`) according to the day the article was published (`weekday`).  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
 
-The results show a weak, positive linear correlation between title subjectivity and length on Mondays, Fridays and Sundays. Tuesday and Wednesday were also showed slightly positive, but generally speaking there is little to no correlation. Thursday and Saturday showed weak, negative correlations. All of these weak correlations tell us that the number of words in an article's title has little to no impact on the article's overall subjectivity rating.
+The results show a weak, positive linear correlation between title subjectivity and length on Mondays, Fridays and Sundays. Tuesday and Wednesday were also showed slightly positive, but generally speaking there is little to no correlation. Thursday and Saturday showed weak, negative correlations. All of these weak correlations tell us that the number of words in an article's title has little to no impact on the title's overall subjectivity rating.
 
 ```{r}
 g <- ggplot(news, aes(x = title_subjectivity, y = n_tokens_title))
