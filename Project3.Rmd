@@ -366,6 +366,8 @@ boostRMSE
 For this section, we will write a function called `bestModel()` to compare all of the RMSE values for the four models above and choose the best one (i.e. the smallest one). 
 
 ```{r}
+#This one works but it doesn't say which model is the one with the lowest value.
+
 bestModel <- function(linear1, linear2, rf, boost){
   vec <- c(linear1, linear2, rf, boost)
   bestRMSE <- min(vec)
@@ -374,6 +376,14 @@ bestModel <- function(linear1, linear2, rf, boost){
 }
 
 bestModel(firstLinearRMSE, secondLinearRMSE, rfRMSE, boostRMSE)
+```
+
+```{r}
+#Trying another one here!
+
+bestModel2 <- function(linear1, linear2, rf, boost){
+  #Function stuff here.
+}
 ```
 
 # Automation
