@@ -27,7 +27,7 @@ library(corrplot)
 library(caret)
 ```
 
-# Introduction to Online News Popularity Data Set
+# Introduction to the Data
 
 The online news popularity data used for this project summarizes a diverse set of features about articles published by [Mashable](http://www.mashable.com) over a two year period with the goal of predicting the number of shares in social networks - a proxy for popularity.
 
@@ -42,8 +42,15 @@ Non-Predictive Variables:
 
 Predictive Variables:
 
-* `data_channel_is_socmed` - Binary variable indicating if the data channel is 'Social Media'  
+* `data_channel_is_*` - Binary variable indicating the type of data channel
+    + `lifestyle` - Lifestyle
+    + `entertainment` - Entertainment
+    + `bus` - Business
+    + `socmed` - Social Media
+    + `tech` - Tech
+    + `World` - World
 * `is_weekend` - Binary variable indicating if the article published on the weekend
+* `weekday` - What day of the week the article was published (factor variable with seven levels)
 * `num_imgs` - The number of images in the article  
 * `num_keywords` - The number of keywords in the metadata  
 * `n_tokens_title` - The number of words in the title  
@@ -52,16 +59,10 @@ Predictive Variables:
 Target Variable:
 
 * `shares` - Number of shares  
-* `var` - description  
-    + `var` - description  
-    + `var` - description  
-* `var` - description  
-    + `var` - description  
-    + `var` - description  
 
 # Data
 
-## Reading in Data
+## Reading in the Data
 
 Running the code chunk below reads in the online news popularity data set using `read_csv()`.
 
@@ -70,7 +71,7 @@ newsOriginal <- read_csv(file = "./OnlineNewsPopularity.csv")
 newsOriginal
 ```
 
-## Modifying Data in Preparation for Model Fits
+## Modifying the Data
 
 Running the code chunk below subsets the data to only include observations for the data channel we're interested in, `data_channel_is_socmed`. All other `data_channel_is_*` observations have been removed from the data set.
 
@@ -98,7 +99,7 @@ levels(news$weekday)
 news
 ```
 
-## Splitting Data into Training Set and Testing Set
+## Splitting the Data
 
 Running the code chunk below splits the modified `news` data set into a training and testing set using `createDataPartition()`. First the seed is set to make sure the random sampling will be reproducible. `createDataPartition()` then creates an indexing vector (`trainIndex`) with a subset of the `shares` variable where the training subset (`newsTrain`) will result in a vector (`list = FALSE`) that has approximately 70% (`p = 0.7`) of the observations from the updated `news` data set. This training vector is then used to create the training set (`newsTrain`) with approximately 70% of the observations from the updated `news` data set, and the test set (`newsTest`) with the remaining 30% of the observations.
 
@@ -147,7 +148,7 @@ tableWeekend <- table(news$is_weekend)
 tableWeekend
 ```
 
-From the table above, we can see that `r tableWeekend[2]` articles were published on the weekend, and `r tableWeekend[1]` articles were published during the week.
+From the table **above**, we can see that `r tableWeekend[2]` articles were published on the weekend, and `r tableWeekend[1]` articles were published during the week.
 
 Running the code chunk below creates a contingency table showing the number of articles in the online `news` popularity data set that were published on certain days of the week (`weekday`).
 
@@ -158,9 +159,48 @@ tableWeekday
 
 ## Graphical Summaries
 
-Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of images (`num_imgs`) articles have.  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
+### Bar Plot
 
-The resulting scatter plot shows a weak, positive linear correlation between popularity (`shares`) and number of images. 
+(Add description here.)
+
+```{r}
+g <- ggplot(news, aes(x = weekday))
+
+g + geom_bar(aes(fill = weekday)) + 
+  labs(title = "Number of Articles Published by Weekday", x = "Weekday") +
+  scale_fill_discrete(name = "Weekday")
+```
+
+### Box Plot 
+
+(Add description here.) **I'm not sure if we should keep this one?**
+
+```{r}
+g <- ggplot(news, aes(x = weekday, y = shares))
+
+g + geom_boxplot(aes(fill = weekday)) + 
+  labs(title = "Box Plot of Shares by Weekday", x = "Weekday", y = "Shares") +
+  scale_fill_discrete(name = "Weekday")
+```
+
+### Histograms
+
+(Add description here.)
+
+```{r}
+g <- ggplot(news, aes(x = shares))
+
+g + geom_histogram(color = "black", fill = "#FF6666") + labs(title = "Histogram of Shares") +
+  labs(title = "Histogram of Shares", x = "Shares")
+
+g + geom_histogram(aes(y=..density..), colour="black", fill="white") + 
+  geom_density(alpha=.2, fill="#FF6666") + 
+  labs(title = "Histogram of Shares with Density", x = "Shares")
+```
+
+### Scatter Plots
+
+Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of images (`num_imgs`) articles have.  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
 
 ```{r}
 g <- ggplot(news, aes(x = shares, y = num_imgs))
@@ -171,8 +211,6 @@ g + geom_point() +
 
 Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of keywords (`num_keywords`) articles have.  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
 
-The resulting scatter plot shows a weak, positive linear correlation between popularity (`shares`) and number of keywords. 
-
 ```{r}
 g <- ggplot(news, aes(x = shares, y = num_keywords))
 g + geom_point() +
@@ -181,8 +219,6 @@ g + geom_point() +
 ```
 
 Running the code chunk below creates a scatter plot to visualize the correlation between the number of words in the article's title (`n_tokens_title`) and title's subjectivity score (`title_subjectivity`).  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
-
-The resulting scatter plot shows almost no correlation between title subjectivity and length. 
 
 ```{r}
 g <- ggplot(news, aes(x = title_subjectivity, y = n_tokens_title))
@@ -193,7 +229,7 @@ g + geom_point() +
 
 # Modeling
 
-## Linear Regression Models
+## Linear Regression
 
 ## Random Forest
 
