@@ -363,7 +363,18 @@ boostRMSE
 
 # Comparison
 
+For this section, we will write a function called `bestModel()` to compare all of the RMSE values for the four models above and choose the best one (i.e. the smallest one). 
 
+```{r}
+bestModel <- function(linear1, linear2, rf, boost){
+  vec <- c(linear1, linear2, rf, boost)
+  bestRMSE <- min(vec)
+  
+  return(bestRMSE)
+}
+
+bestModel(firstLinearRMSE, secondLinearRMSE, rfRMSE, boostRMSE)
+```
 
 # Automation
 
