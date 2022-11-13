@@ -308,7 +308,13 @@ randomForestFit
 ```{r}
 randomForestPredict <- predict(randomForestFit, newdata = newsTest)
 
-#confusionMatrix(randomForestPredict, newsTest$shares)
+randomForestPerformance <- postResample(randomForestPredict, newsTest$shares)
+randomForestPerformance
+
+attributes(randomForestPerformance)
+
+rfRMSE <- randomForestPerformance[1]
+rfRMSE
 ```
 
 ## Boosted Tree
@@ -326,7 +332,8 @@ Boosted trees are another enhancement to the single tree methods. However, unlik
 Running the code chunk below trains the boosted tree model. The formula notation used in the `train()` function models the `shares` variable using the following predictor/explanatory variables: `weekday`, `num_imgs`, `num_keywords`, `n_tokens_title`, and `title_subjectivity`. To use the boosted tree model, the `method` argument was specified as `"gbm"`. The data was pre-processed by centering and scaling. `tuneGrid` was then used to consider values of `n.trees` = 50, `interaction.depth` = 1, `shrinkage` = 0.1, and `n.minobsinnode` = 10. Lastly, `trainControl()` was used within the `trControl` argument to do 10 fold cross-validation using the `"cv"` `method`.
 
 ```{r}
-boostTreeFit <- train(shares ~ weekday + num_imgs + num_keywords + n_tokens_title + title_subjectivity + global_subjectivity, data = newsTrain,
+boostTreeFit <- train(shares ~ weekday + num_imgs + num_keywords + n_tokens_title + title_subjectivity
+                        + global_subjectivity, data = newsTrain,
                         method = "gbm",
                         preProcess = c("center", "scale"),
                         tuneGrid = data.frame(n.trees = 50, interaction.depth = 1, shrinkage = 0.1, n.minobsinnode = 10),
@@ -338,7 +345,14 @@ Now that the boosted tree model has been trained (`boostTreeFit`), running the c
 
 ```{r}
 boostingPredict <- predict(boostTreeFit, newdata = newsTest)
-postResample(boostingPredict, newsTest$shares)
+
+boostTreePerformance <- postResample(boostingPredict, newsTest$shares)
+boostTreePerformance
+
+attributes(boostTreePerformance)
+
+boostRMSE <- boostTreePerformance[1]
+boostRMSE
 ```
 
 # Comparison
