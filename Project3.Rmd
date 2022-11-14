@@ -3,40 +3,18 @@ title: "ST 558 Project 3"
 author: "Melanie Kahn & Rachel Hardy"
 date: "2022-11-12"
 output: 
-  html_document:  
+  html_document:
     toc: true
     toc_depth: 3
     toc_float: true
     theme: readable
     df_print: tibble
 params:
-    dataChannel:
+    dataChannel: "data_channel_is_socmed"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = TRUE)
-```
-
-```{r}
-#Not sure if this is right, it creates a tibble with 0 observations.
-
-#rmarkdown::render("./Project3.Rmd", output_file = "Social Media Channel.html", 
-                  #params = list(dataChannel = "data_channel_is_socmed"))
-
-#rmarkdown::render("./Project3.Rmd", output_file = "Lifestyle Channel.html", 
-                  #params = list(dataChannel = "data_channel_is_lifestyle"))
-
-#rmarkdown::render("./Project3.Rmd", output_file = "Entertainment Channel.html", 
-                  #params = list(dataChannel = "data_channel_is_entertainment"))
-
-#rmarkdown::render("./Project3.Rmd", output_file = "Business Channel.html", 
-                  #params = list(dataChannel = "data_channel_is_bus"))
-
-#rmarkdown::render("./Project3.Rmd", output_file = "Tech Channel.html", 
-                  #params = list(dataChannel = "data_channel_is_tech"))
-
-#rmarkdown::render("./Project3.Rmd", output_file = "World Channel.html", 
-                  #params = list(dataChannel = "data_channel_is_world"))
 ```
 
 # Required Libraries
@@ -55,7 +33,7 @@ library(rmarkdown)
 # Automation
 
 ```{r}
-interestChannel <- c("data_channel_is_socmed", "data_channel_is_lifestyle", "data_channel_is_entertainment", "data_channel_is_bus", "data_channel_is_tech", "data_channel_is_world")
+interestChannel <- list("data_channel_is_socmed", "data_channel_is_lifestyle", "data_channel_is_entertainment", "data_channel_is_bus", "data_channel_is_tech", "data_channel_is_world")
 
 outputFile <- paste0(interestChannel, ".html")
 
@@ -70,7 +48,6 @@ apply(reports, MARGIN = 1,
         render(input = "Project3.Rmd", output_file = x[[1]], params = x[[2]])
 })
 ```
-
 
 # Introduction to the Data
 
@@ -300,8 +277,6 @@ Running the code chunk below creates a multiple linear regression model where `s
 
 By using the `summary()` function, we can see the values for the residuals and coefficients, as well as the performance criteria values such as multiple R-squared.
 
-*Don't we still need to use predict() and postResample() on the test set here? It looks like we're using the RMSE on the training set*
-
 ```{r}
 set.seed(100)
 firstLinearModel <- train(shares ~ weekday + title_subjectivity + num_imgs + I(title_subjectivity^2) + I(num_imgs^2), 
@@ -312,14 +287,23 @@ firstLinearModel <- train(shares ~ weekday + title_subjectivity + num_imgs + I(t
 firstLinearModel
 
 summary(firstLinearModel)
+```
 
-firstLinearRMSE <- firstLinearModel$results$RMSE
+Now that the multiple linear regression model has been trained (`firstLinearModel`), running the code chunk below will check how well the model does on the test set `newsTest` using the `postResample()` function. The RMSE from the `postResample` output is then stored in an object `firstLinearRMSE` for later use in our comparison functions.
+
+```{r}
+firstLinearPredict <- predict(firstLinearModel, newdata = newsTest)
+
+firstLinearPerformance <- postResample(firstLinearPredict, newsTest$shares)
+firstLinearPerformance
+
+attributes(firstLinearPerformance)
+
+firstLinearRMSE <- firstLinearPerformance[1]
 firstLinearRMSE
 ```
 
 Running the code chunk below creates a simple linear regression model where `shares` is the response variable and the predictor variables are `weekday`, `num_imgs`, `num_keywords`, `n_tokens_title`, `title_subjectivity`, and `global_subjectivity`. The `summary()` function is used to examine the values for the residuals and coefficients, as well as the performance criteria values such as multiple R-squared.
-
-*Don't we still need to use predict() and postResample() on the test set here? It looks like we're using the RMSE on the training set*
 
 ```{r}
 set.seed(100)
@@ -331,8 +315,19 @@ secondLinearModel <- train(shares ~ weekday + num_imgs + num_keywords + n_tokens
 secondLinearModel
 
 summary(secondLinearModel)
+```
 
-secondLinearRMSE <- secondLinearModel$results$RMSE
+Now that the simple linear regression model has been trained (`secondLinearModel`), running the code chunk below will check how well the model does on the test set `newsTest` using the `postResample()` function. The RMSE from the `postResample` output is then stored in an object `secondLinearRMSE` for later use in our comparison functions.
+
+```{r}
+secondLinearPredict <- predict(secondLinearModel, newdata = newsTest)
+
+secondLinearPerformance <- postResample(secondLinearPredict, newsTest$shares)
+secondLinearPerformance
+
+attributes(secondLinearPerformance)
+
+secondLinearRMSE <- secondLinearPerformance[1]
 secondLinearRMSE
 ```
 
