@@ -39,6 +39,19 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = TRU
                   #params = list(dataChannel = "data_channel_is_world"))
 ```
 
+# Required Libraries
+
+Running the code chunk below loads the `tidyverse`, `readr`, `ggplot2`, `shiny`, `caret`, and `rmarkdown` packages.
+
+```{r}
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(shiny)
+library(caret)
+library(rmarkdown)
+```
+
 # Automation
 
 ```{r}
@@ -58,18 +71,6 @@ apply(reports, MARGIN = 1,
 })
 ```
 
-# Required Libraries
-
-Running the code chunk below loads the `tidyverse`, `readr`, `ggplot2`, `shiny`, `caret`, and `rmarkdown` packages.
-
-```{r}
-library(tidyverse)
-library(readr)
-library(ggplot2)
-library(shiny)
-library(caret)
-library(rmarkdown)
-```
 
 # Introduction to the Data
 
