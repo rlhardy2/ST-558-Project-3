@@ -70,7 +70,7 @@ Predictive Variables:
     + `bus` - Business  
     + `socmed` - Social Media  
     + `tech` - Tech  
-    + `World` - World  
+    + `world` - World  
 * `is_weekend` - Binary variable indicating if the article published on the weekend  
 * `weekday` - What day of the week the article was published (factor variable with seven levels)  
 * `num_imgs` - The number of images in the article  
@@ -82,6 +82,8 @@ Predictive Variables:
 Target Variable:
 
 * `shares` - Number of shares  
+
+The purpose of the following analysis is to create predictive models for this data set and find which one performs the best. After splitting the data into a training and test set, the performance of a simple linear regression model, a multiple regression model, a random forest model, and a boosted tree model will be compared based on the root-mean-square error (RMSE) calculation. The best model will have the smallest RMSE from the test set. This process will be done across each data channel (lifestyle,entertainment, business, social media, tech, and world) using automated RMarkdown reports.
 
 # Data
 
