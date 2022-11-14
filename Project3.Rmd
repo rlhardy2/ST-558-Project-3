@@ -1,7 +1,7 @@
 ---
 title: "ST 558 Project 3"
 author: "Melanie Kahn & Rachel Hardy"
-date: "2022-11-12"
+date: "2022-11-14"
 output: 
   html_document:
     toc: true

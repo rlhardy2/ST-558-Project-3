@@ -1,6 +1,6 @@
 ---
 title: "RenderFunctionP3"
-author: "Melanie Kahn"
+author: "Melanie Kahn & Rachel Hardy"
 date: "2022-11-14"
 output: html_document
 params:
