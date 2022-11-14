@@ -181,6 +181,8 @@ tableWeekday <- table(news$weekday)
 tableWeekday
 ```
 
+From the table **above**, we can see that `r tableWeekday[1]` articles were published on Monday, `r tableWeekend[2]` were published on Tuesday, `r tableWeekend[3]` on Wednesday, `r tableWeekend[4]` on Thursday, `r tableWeekend[5]` on Friday, `r tableWeekend[6]` on Saturday, `r tableWeekend[7]` articles were published on Sunday.
+
 ## Graphical Summaries
 
 ### Bar Plot
@@ -226,7 +228,7 @@ g + geom_histogram(aes(y=..density..), colour="black", fill="white") +
 
 Running the code chunk below creates a scatter plot to visualize the correlation between the text subjectivity (`global_subjectivity`) and the number of images (`num_imgs`) articles have. The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model.
 
-The results show a weak, positive linear correlation between an article's overall subjectivity and the number of images used. It is an interesting finding that subjectivity would increase with the number of images, even if only slightly.
+Using this linear regression line on the scatter plot *below* helps quantify the direction and strength of the relationship between the text subjectivity on the x-axis and the number of images on the y-axis. Results showing a regression line starting lower on the y-axis than it ends (a _positive_ slope) represents a _positive_ linear correlation between an article's overall subjectivity and the number of images used - if one increases, so does the other. Results showing a regression line starting higher on the y-axis than it ends (a _negative_ slope) represents a _negative_ linear correlation between the two, meaning the trend in the data shows a higher number of images reduces subjectivity in an article. The steepness of the slope associated with this regression line indicates the strength of the variable relationship. The closer a regression line gets to horizontal, the weaker the correlation between the subjectivity and images; and vice versa.
 
 ```{r}
 g <- ggplot(news, aes(x = global_subjectivity, y = num_imgs))
@@ -241,6 +243,8 @@ Running the code chunk below creates a scatter plot to visualize the correlation
 
 The results show a weak, positive linear correlation between the number of shares and keywords, meaning that as the number of keywords increases, so does the popularity of the article. As of of the default arguments for the `geom_smooth` function is `se = TRUE`, we can also see that the confidence interval widens as shares increase, indicating that uncertainty of the effect is greater.
 
+Using this linear regression line on the scatter plot *below* helps quantify the direction and strength of the relationship between the number of shares on the x-axis and the number of keywords on the y-axis. Results showing a regression line starting lower on the y-axis than it ends (a _positive_ slope) represents a _positive_ linear correlation between an article's number of shares and the number of keywords used - if one increases, so does the other. Results showing a regression line starting higher on the y-axis than it ends (a _negative_ slope) represents a _negative_ linear correlation between the two, meaning the trend in the data shows a higher number of keywords reduces the number of times an article is shared. The steepness of the slope associated with this regression line indicates the strength of the variable relationship. The closer a regression line gets to horizontal, the weaker the correlation between the popularity and keywords; and vice versa.
+
 ```{r}
 g <- ggplot(news, aes(x = shares, y = num_keywords))
 g + geom_jitter(aes(color = weekday)) +
@@ -253,6 +257,8 @@ g + geom_jitter(aes(color = weekday)) +
 Running the code chunk below creates a facet grid scatter plot to visualize the correlation between the number of words in the article's title (`n_tokens_title`) and title's subjectivity score (`title_subjectivity`) according to the day the article was published (`weekday`).  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
 
 The results show a weak, positive linear correlation between title subjectivity and length on Mondays, Fridays and Sundays. Tuesday and Wednesday were also showed slightly positive, but generally speaking there is little to no correlation. Thursday and Saturday showed weak, negative correlations. All of these weak correlations tell us that the number of words in an article's title has little to no impact on the title's overall subjectivity rating.
+
+Using this linear regression line on the scatter plot *below* helps quantify the direction and strength of the relationship between the title subjectivity on the x-axis and the number of words in the title on the y-axis. Results showing a regression line starting lower on the y-axis than it ends (a _positive_ slope) represents a _positive_ linear correlation between a title's subjectivity and length - if one increases, so does the other. Results showing a regression line starting higher on the y-axis than it ends (a _negative_ slope) represents a _negative_ linear correlation between the two, meaning the trend in the data shows a higher number of words reduces title subjectivity. The steepness of the slope associated with this regression line indicates the strength of the variable relationship. The closer a regression line gets to horizontal, the weaker the correlation between the title subjectivity and length; and vice versa.
 
 ```{r}
 g <- ggplot(news, aes(x = title_subjectivity, y = n_tokens_title))
@@ -333,6 +339,7 @@ randomForestFit <- train(shares ~ weekday + num_imgs + num_keywords,
 randomForestFit
 ```
 
+Now that the random forest model has been trained (`randomForestFit`), running the code chunk below will check how well the model does on the test set `newsTest` using the `postResample()` function. The RMSE from the `postResample` output is then stored in an object `rfRMSE` for later use in our comparison functions.
 
 ```{r}
 randomForestPredict <- predict(randomForestFit, newdata = newsTest)
@@ -370,7 +377,7 @@ boostTreeFit <- train(shares ~ weekday + num_imgs + num_keywords + n_tokens_titl
 boostTreeFit
 ```
 
-Now that the boosted tree model has been trained (`boostTreeFit`), running the code chunk below will check how well the model does on the test set `newsTest` using the `postResample()` function. 
+Now that the boosted tree model has been trained (`boostTreeFit`), running the code chunk below will check how well the model does on the test set `newsTest` using the `postResample()` function. The RMSE from the `postResample` output is then stored in an object `boostRMSE` for later use in our comparison functions.
 
 ```{r}
 boostingPredict <- predict(boostTreeFit, newdata = newsTest)
