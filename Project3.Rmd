@@ -9,6 +9,8 @@ output:
     toc_float: true
     theme: readable
     df_print: tibble
+params:
+    dataChannel:
 ---
 
 ```{r setup, include=FALSE}
@@ -18,23 +20,42 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = TRU
 ```{r}
 #Not sure if this is right, it creates a tibble with 0 observations.
 
-rmarkdown::render("./Project3.Rmd", output_file = "Social Media Channel.html", 
-                  params = list(dataChannel = "data_channel_is_socmed"))
+#rmarkdown::render("./Project3.Rmd", output_file = "Social Media Channel.html", 
+                  #params = list(dataChannel = "data_channel_is_socmed"))
 
-rmarkdown::render("./Project3.Rmd", output_file = "Lifestyle Channel.html", 
-                  params = list(dataChannel = "data_channel_is_lifestyle"))
+#rmarkdown::render("./Project3.Rmd", output_file = "Lifestyle Channel.html", 
+                  #params = list(dataChannel = "data_channel_is_lifestyle"))
 
-rmarkdown::render("./Project3.Rmd", output_file = "Entertainment Channel.html", 
-                  params = list(dataChannel = "data_channel_is_entertainment"))
+#rmarkdown::render("./Project3.Rmd", output_file = "Entertainment Channel.html", 
+                  #params = list(dataChannel = "data_channel_is_entertainment"))
 
-rmarkdown::render("./Project3.Rmd", output_file = "Business Channel.html", 
-                  params = list(dataChannel = "data_channel_is_bus"))
+#rmarkdown::render("./Project3.Rmd", output_file = "Business Channel.html", 
+                  #params = list(dataChannel = "data_channel_is_bus"))
 
-rmarkdown::render("./Project3.Rmd", output_file = "Tech Channel.html", 
-                  params = list(dataChannel = "data_channel_is_tech"))
+#rmarkdown::render("./Project3.Rmd", output_file = "Tech Channel.html", 
+                  #params = list(dataChannel = "data_channel_is_tech"))
 
-rmarkdown::render("./Project3.Rmd", output_file = "World Channel.html", 
-                  params = list(dataChannel = "data_channel_is_world"))
+#rmarkdown::render("./Project3.Rmd", output_file = "World Channel.html", 
+                  #params = list(dataChannel = "data_channel_is_world"))
+```
+
+# Automation
+
+```{r}
+interestChannel <- c("data_channel_is_socmed", "data_channel_is_lifestyle", "data_channel_is_entertainment", "data_channel_is_bus", "data_channel_is_tech", "data_channel_is_world")
+
+outputFile <- paste0(interestChannel, ".html")
+
+params = lapply(interestChannel, FUN = function(x){list(dataChannel = x)})
+
+reports <- tibble(outputFile, params)
+```
+
+```{r}
+apply(reports, MARGIN = 1,
+      FUN = function(x){
+        render(input = "Project3.Rmd", output_file = x[[1]], params = x[[2]])
+})
 ```
 
 # Required Libraries
@@ -100,7 +121,7 @@ newsOriginal
 Running the code chunk below subsets the data to only include observations for the data channel we're interested in.
 
 ```{r}
-news <- newsOriginal %>% filter(params$dataChannel == 1)
+news <- newsOriginal %>% filter(get(params$dataChannel) == 1)
 news
 ```
 
@@ -427,24 +448,7 @@ bestRMSE; bestModel
 
 The best model is `r bestModel` with a corresponding RMSE value of `r bestRMSE`.
 
-# Automation
 
-```{r}
-#interestChannel <- c("data_channel_is_socmed", "data_channel_is_lifestyle", "data_channel_is_entertainment", "data_channel_is_bus", "data_channel_is_tech", "data_channel_is_world")
-
-#outputFile <- paste0(interestChannel, ".html")
-
-#params = lapply(interestChannel, FUN = function(x){list(dataChannel = x)})
-
-#reports <- tibble(outputFile, params)
-```
-
-```{r}
-#apply(reports, MARGIN = 1,
-     # FUN = function(x){
-        #render(input = "Project3.Rmd", output_file = x[[1]], params = x[[2]])
-#})
-```
 
 
 
