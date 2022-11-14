@@ -45,7 +45,7 @@ reports <- tibble(outputFile, params)
 ```{r}
 apply(reports, MARGIN = 1,
       FUN = function(x){
-        render(input = "Project3.Rmd", output_file = x[[1]], params = x[[2]])
+        render(input = "./Project3.Rmd", output_file = x[[1]], params = x[[2]])
 })
 ```
 
@@ -53,7 +53,7 @@ apply(reports, MARGIN = 1,
 
 The online news popularity data used for this project summarizes a diverse set of features about articles published by [Mashable](http://www.mashable.com) over a two year period with the goal of predicting the number of shares in social networks - a proxy for popularity.
 
-The original online news popularity data set included 58 predictive variables, 2 non-predictive variables, 1 target variable. For the purposes of this project, we are only using a subset of this original data to contain _ predictive variables and _ non-predictive variables, keeping the same target variable.
+The original online news popularity data set included 58 predictive variables, 2 non-predictive variables, 1 target variable. For the purposes of this project, we are only using 14 non-predictive variables, keeping the same target variable.
 
 The variables present for each observation in this subset of the online news popularity data set are as follows:
 
