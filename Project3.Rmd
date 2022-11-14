@@ -233,7 +233,7 @@ Using this linear regression line on the scatter plot *below* helps quantify the
 ```{r}
 g <- ggplot(news, aes(x = global_subjectivity, y = num_imgs))
 g + geom_point() +
-  geom_smooth(method = lm, col = "Blue") +
+  geom_smooth(method = lm, col = "Blue", se = FALSE) +
   labs(title = "Relationship Between Text Subjectivity and Number of Images",
        x = "Text Subjectivity",
        y = "Number of Images")
@@ -241,9 +241,7 @@ g + geom_point() +
 
 Running the code chunk below creates a scatter plot to visualize the correlation between the number of `shares` and the number of keywords (`num_keywords`) articles have. `geom_jitter` is used instead of `geom_point()` to plot the data points in a manner where the `weekday` component can be better visualized. The `geom_smooth()` function plots the regression line using method `lm` for linear model.
 
-The results show a weak, positive linear correlation between the number of shares and keywords, meaning that as the number of keywords increases, so does the popularity of the article. As of of the default arguments for the `geom_smooth` function is `se = TRUE`, we can also see that the confidence interval widens as shares increase, indicating that uncertainty of the effect is greater.
-
-Using this linear regression line on the scatter plot *below* helps quantify the direction and strength of the relationship between the number of shares on the x-axis and the number of keywords on the y-axis. Results showing a regression line starting lower on the y-axis than it ends (a _positive_ slope) represents a _positive_ linear correlation between an article's number of shares and the number of keywords used - if one increases, so does the other. Results showing a regression line starting higher on the y-axis than it ends (a _negative_ slope) represents a _negative_ linear correlation between the two, meaning the trend in the data shows a higher number of keywords reduces the number of times an article is shared. The steepness of the slope associated with this regression line indicates the strength of the variable relationship. The closer a regression line gets to horizontal, the weaker the correlation between the popularity and keywords; and vice versa.
+Using this linear regression line on the scatter plot *below* helps quantify the direction and strength of the relationship between the number of shares on the x-axis and the number of keywords on the y-axis. Results showing a regression line starting lower on the y-axis than it ends (a _positive_ slope) represents a _positive_ linear correlation between an article's number of shares and the number of keywords used - if one increases, so does the other. Results showing a regression line starting higher on the y-axis than it ends (a _negative_ slope) represents a _negative_ linear correlation between the two, meaning the trend in the data shows a higher number of keywords reduces the number of times an article is shared. The steepness of the slope associated with this regression line indicates the strength of the variable relationship. The closer a regression line gets to horizontal, the weaker the correlation between the popularity and keywords; and vice versa. As one of the default arguments for the `geom_smooth` function is `se = TRUE`, a 95% confidence interval can also be seen. Wider confidence intervals indicate increased uncertainty of the effect the variables have on each other.
 
 ```{r}
 g <- ggplot(news, aes(x = shares, y = num_keywords))
@@ -256,9 +254,7 @@ g + geom_jitter(aes(color = weekday)) +
 
 Running the code chunk below creates a facet grid scatter plot to visualize the correlation between the number of words in the article's title (`n_tokens_title`) and title's subjectivity score (`title_subjectivity`) according to the day the article was published (`weekday`).  The `geom_point()` function plots the data points while the `geom_smooth()` function plots the regression line using method `lm` for linear model. 
 
-The results show a weak, positive linear correlation between title subjectivity and length on Mondays, Fridays and Sundays. Tuesday and Wednesday were also showed slightly positive, but generally speaking there is little to no correlation. Thursday and Saturday showed weak, negative correlations. All of these weak correlations tell us that the number of words in an article's title has little to no impact on the title's overall subjectivity rating.
-
-Using this linear regression line on the scatter plot *below* helps quantify the direction and strength of the relationship between the title subjectivity on the x-axis and the number of words in the title on the y-axis. Results showing a regression line starting lower on the y-axis than it ends (a _positive_ slope) represents a _positive_ linear correlation between a title's subjectivity and length - if one increases, so does the other. Results showing a regression line starting higher on the y-axis than it ends (a _negative_ slope) represents a _negative_ linear correlation between the two, meaning the trend in the data shows a higher number of words reduces title subjectivity. The steepness of the slope associated with this regression line indicates the strength of the variable relationship. The closer a regression line gets to horizontal, the weaker the correlation between the title subjectivity and length; and vice versa.
+Using this linear regression line on the scatter plot *below* helps quantify the direction and strength of the relationship between the title subjectivity on the x-axis and the number of words in the title on the y-axis. Results showing a regression line starting lower on the y-axis than it ends (a _positive_ slope) represents a _positive_ linear correlation between a title's subjectivity and length - if one increases, so does the other. Results showing a regression line starting higher on the y-axis than it ends (a _negative_ slope) represents a _negative_ linear correlation between the two, meaning the trend in the data shows a higher number of words reduces title subjectivity. The steepness of the slope associated with this regression line indicates the strength of the variable relationship. The closer a regression line gets to horizontal, the weaker the correlation between the title subjectivity and length; and vice versa. The 95% confidence intervals may be harder to see due to the faceted nature of these plots, but wider confidence intervals still indicate increased uncertainty of the effect the variables have on each other.
 
 ```{r}
 g <- ggplot(news, aes(x = title_subjectivity, y = n_tokens_title))
@@ -282,6 +278,8 @@ Running the code chunk below creates a multiple linear regression model where `s
 
 By using the `summary()` function, we can see the values for the residuals and coefficients, as well as the performance criteria values such as multiple R-squared.
 
+*Don't we still need to use predict() and postResample() on the test set here? It looks like we're using the RMSE on the training set*
+
 ```{r}
 set.seed(100)
 firstLinearModel <- train(shares ~ weekday + title_subjectivity + num_imgs + I(title_subjectivity^2) + I(num_imgs^2), 
@@ -298,6 +296,8 @@ firstLinearRMSE
 ```
 
 Running the code chunk below creates a simple linear regression model where `shares` is the response variable and the predictor variables are `weekday`, `num_imgs`, `num_keywords`, `n_tokens_title`, `title_subjectivity`, and `global_subjectivity`. The `summary()` function is used to examine the values for the residuals and coefficients, as well as the performance criteria values such as multiple R-squared.
+
+*Don't we still need to use predict() and postResample() on the test set here? It looks like we're using the RMSE on the training set*
 
 ```{r}
 set.seed(100)
