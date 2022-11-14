@@ -10,3 +10,5 @@ forcats
 corrplot
 lattice
 caret
+shiny
+rmarkdown
