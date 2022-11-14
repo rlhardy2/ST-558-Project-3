@@ -3,11 +3,9 @@ title: "ST 558 Project 3"
 author: "Melanie Kahn & Rachel Hardy"
 date: "2022-11-14"
 output: 
-  html_document:
+  github_document:
     toc: true
     toc_depth: 3
-    toc_float: true
-    theme: readable
     df_print: tibble
 params:
     dataChannel: "data_channel_is_socmed"
@@ -28,25 +26,6 @@ library(ggplot2)
 library(shiny)
 library(caret)
 library(rmarkdown)
-```
-
-# Automation
-
-```{r}
-interestChannel <- list("data_channel_is_socmed", "data_channel_is_lifestyle", "data_channel_is_entertainment", "data_channel_is_bus", "data_channel_is_tech", "data_channel_is_world")
-
-outputFile <- paste0(interestChannel, ".html")
-
-params = lapply(interestChannel, FUN = function(x){list(dataChannel = x)})
-
-reports <- tibble(outputFile, params)
-```
-
-```{r}
-apply(reports, MARGIN = 1,
-      FUN = function(x){
-        render(input = "./Project3.Rmd", output_file = x[[1]], params = x[[2]])
-})
 ```
 
 # Introduction to the Data
