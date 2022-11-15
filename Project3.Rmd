@@ -167,7 +167,7 @@ From the table **above**, we can see that `r tableWeekday[1]` articles were publ
 
 ### Bar Plot
 
-Running the code chunk below creates a bar plot to visualize the number of articles published per each `weekday`. Using the aesthetics option `aes(fill = weekday)` inside the `geom_bar()` function gives us a nicely colored graph.
+Running the code chunk below creates a bar plot to visualize the number of articles published (y-axis) per each `weekday` (x-axis). Using the aesthetics option `aes(fill = weekday)` inside the `geom_bar()` function gives us a nicely colored graph.
 
 ```{r}
 g <- ggplot(news, aes(x = weekday))
@@ -181,6 +181,8 @@ g + geom_bar(aes(fill = weekday)) +
 
 Running the code chunk below creates a box plot of number of `shares` for each `weekday`. Using the aesthetics option 'fill = weekday' gives us a nicely colored graph.
 
+Box plots are a nice visualization of how the data is spread out by showing the mean, minimum, maximum, as well as the 25th and 75th quartiles of the data. It is also a nice way to check for extreme outliers that may affect prediction models.
+
 ```{r}
 g <- ggplot(news, aes(x = weekday, y = shares))
 
@@ -191,7 +193,7 @@ g + geom_boxplot(aes(fill = weekday)) +
 
 ### Histograms
 
-Running the code chunk below creates two histograms of the number of `shares` that show us the distribution of the variable. The second histogram has an added density layer to give us a better idea of how the data is spread out.
+Running the code chunk below creates two histograms of the number of `shares` that show us the distribution of the variable. The second histogram has an added density layer to give us a better idea of how the data is spread out. Histograms are another good way to visualize how the data is spread out!
 
 ```{r}
 g <- ggplot(news, aes(x = shares))
@@ -424,8 +426,3 @@ bestRMSE; bestModel
 ```
 
 The best model is `r bestModel` with a corresponding RMSE value of `r bestRMSE`.
-
-
-
-
-
