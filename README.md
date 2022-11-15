@@ -13,6 +13,9 @@ GitHub repository used for ST 558 Project 3. Collaborators are Rachel Hardy and 
 
 **The analyses created from tis project are linked below:**
 
+* [Business Analysis](https://rlhardy2.github.io/ST-558-Project-3/data_channel_is_entertainment.html)
+* 
+
 
 **The render() code used to create the above analyses is below:**
 
