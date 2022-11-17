@@ -11,8 +11,14 @@ GitHub repository used for ST 558 Project 3. Collaborators are Rachel Hardy and 
 * caret
 * rmarkdown
 
-**The analyses created from tis project are linked below:**
+**The analyses created from this project are linked below:**
 
+* [Business Analysis](https://rlhardy2.github.io/ST-558-Project-3/data_channel_is_bus.html)
+* [Entertainment Analysis](https://rlhardy2.github.io/ST-558-Project-3/data_channel_is_entertainment.html)
+* [Lifestyle Analysis](https://rlhardy2.github.io/ST-558-Project-3/data_channel_is_lifestyle.html)
+* [Social Media Analysis](https://rlhardy2.github.io/ST-558-Project-3/data_channel_is_socmed.html)
+* [Tech Analysis](https://rlhardy2.github.io/ST-558-Project-3/data_channel_is_tech.html)
+* [World Analysis](https://rlhardy2.github.io/ST-558-Project-3/data_channel_is_world.html)
 
 **The render() code used to create the above analyses is below:**
 
