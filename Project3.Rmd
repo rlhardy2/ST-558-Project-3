@@ -12,7 +12,7 @@ params:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 # Required Libraries
@@ -161,7 +161,7 @@ tableWeekday <- table(news$weekday)
 tableWeekday
 ```
 
-From the table **above**, we can see that `r tableWeekday[1]` articles were published on Monday, `r tableWeekend[2]` were published on Tuesday, `r tableWeekend[3]` on Wednesday, `r tableWeekend[4]` on Thursday, `r tableWeekend[5]` on Friday, `r tableWeekend[6]` on Saturday, `r tableWeekend[7]` articles were published on Sunday.
+From the table **above**, we can see that `r tableWeekday[1]` articles were published on Monday, `r tableWeekday[2]` were published on Tuesday, `r tableWeekday[3]` on Wednesday, `r tableWeekday[4]` on Thursday, `r tableWeekday[5]` on Friday, `r tableWeekday[6]` on Saturday, `r tableWeekday[7]` articles were published on Sunday.
 
 ## Graphical Summaries
 
